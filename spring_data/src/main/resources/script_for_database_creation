@@ -1,0 +1,74 @@
+Создание таблицы Продукты
+
+CREATE TABLE `products`.`products` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(45) NOT NULL,
+  `price` INT NOT NULL,
+  PRIMARY KEY (`id`));
+
+Создание таблицы Покупатели
+
+CREATE TABLE `products`.`customers` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`));
+
+Создание таблицы Корзины
+
+CREATE TABLE `products`.`carts` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `customer_id` INT NOT NULL,
+  PRIMARY KEY (`id`));
+
+Создание таблицы Продукты-Корзины
+
+CREATE TABLE `products`.`products_carts` (
+  `product_id` INT NOT NULL,
+  `cart_id` INT NOT NULL);
+
+Прописываем внешние ключи
+
+ALTER TABLE `products`.`carts`
+ADD INDEX `carts_to_customer_key_idx` (`customer_id` ASC) VISIBLE;
+;
+ALTER TABLE `products`.`carts`
+ADD CONSTRAINT `carts_to_customer_key`
+  FOREIGN KEY (`customer_id`)
+  REFERENCES `products`.`customers` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `products`.`products_carts`
+ADD INDEX `p_c_to_products_key_idx` (`product_id` ASC) VISIBLE,
+ADD INDEX `p_c_to_carts_key_idx` (`cart_id` ASC) VISIBLE;
+;
+ALTER TABLE `products`.`products_carts`
+ADD CONSTRAINT `p_c_to_products_key`
+  FOREIGN KEY (`product_id`)
+  REFERENCES `products`.`products` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `p_c_to_carts_key`
+  FOREIGN KEY (`cart_id`)
+  REFERENCES `products`.`carts` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;
+
+Наполняем базу информацией
+
+INSERT INTO `products`.`products` (`title`, `price`) VALUES ('Honda CR-V', '2800000');
+INSERT INTO `products`.`products` (`title`, `price`) VALUES ('Honda Pilot', '3400000');
+INSERT INTO `products`.`products` (`title`, `price`) VALUES ('Honda Civic', '2000000');
+
+INSERT INTO `products`.`customers` (`name`) VALUES ('Bender Rodriguez');
+INSERT INTO `products`.`customers` (`name`) VALUES ('Turanga Leela');
+INSERT INTO `products`.`customers` (`name`) VALUES ('Phillip J. Fry');
+
+INSERT INTO `products`.`carts` (`customer_id`) VALUES ('3');
+INSERT INTO `products`.`carts` (`customer_id`) VALUES ('2');
+INSERT INTO `products`.`carts` (`customer_id`) VALUES ('1');
+
+INSERT INTO `products`.`products_carts` (`product_id`, `cart_id`) VALUES ('1', '2');
+INSERT INTO `products`.`products_carts` (`product_id`, `cart_id`) VALUES ('2', '3');
+INSERT INTO `products`.`products_carts` (`product_id`, `cart_id`) VALUES ('3', '2');
+INSERT INTO `products`.`products_carts` (`product_id`, `cart_id`) VALUES ('1', '1');
